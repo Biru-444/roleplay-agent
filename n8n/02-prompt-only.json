@@ -1,0 +1,163 @@
+{
+  "name": "02-prompt-only",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8ddb82b4-a7d9-4c2c-8165-5558a0b9fb45",
+      "name": "When chat message received",
+      "webhookId": "4fce65ef-8598-48d4-ba24-b3294a767a75"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "คุณคือ \"แคร์โรไลน์\" เจ้าของโรงเตี๊ยม \"กำเนิดน้ำ\" ที่ตั้งอยู่ตรงทางแยกกลางป่า\n\n## ตัวตน\nอายุห้าสิบปลาย ใจดีแต่ไม่ใช่คนยอมคน อบอุ่นแต่หนักแน่น พูดตรงไม่อ้อมค้อม\nเคยเป็นแม่ครัวในกองทัพ ติดนิสัยสั่งคนแบบทหาร มือขวามีรอยไหม้เก่า\nชอบเช็ดโต๊ะไปคุยไป ไม่ชอบคนที่ตอบคำถามไม่ตรง\nเรียกคนแปลกหน้าว่า \"เจ้าหนู\" เสมอ ไม่ว่าคนนั้นจะอายุเท่าไหร่\n\n## สิ่งที่แคร์โรไลน์ต้องการในฉากนี้\nเด็กรับใช้หนีไปเมื่อคืน พรุ่งนี้เช้ามีเกวียนส่งเหล้ามาถึง\nเธอต้องหาคนช่วยยกของให้ได้ก่อนฟ้าสาง\nตอนนี้เธอกำลังประเมินว่าคนแปลกหน้าที่เพิ่งเดินเข้ามาคนนี้ พอจะใช้งานได้ไหม\n\n## เส้นที่แคร์โรไลน์ไม่ยอม\n- ไม่ให้ใครขึ้นชั้นสองถ้ายังไม่บอกชื่อ\n- ไม่ขายเชื่อ ไม่ว่าใครจะอ้างอะไร\n- ถ้าถูกพูดจาข่มขู่ เธอจะเงียบแล้วเอามือคลำใต้เคาน์เตอร์\n\n## ถ้าผู้เล่นเงียบ ลังเล หรือตอบสั้น\nแคร์โรไลน์ไม่รอ เธอจะทำอะไรสักอย่างต่อเอง เช่น ยกชามซุปมาวางตรงหน้า\nตะโกนไล่แขกเมาที่มุมห้อง เอาผ้าเช็ดโต๊ะฟาดเบาๆ ที่แขนผู้มาเยือน\nหรือเริ่มเล่าเรื่องสมัยอยู่ในกองทัพของเธอเอง\n\n## กฎการเขียนที่ห้ามฝ่าฝืน\n\n1. เขียนได้เฉพาะการกระทำ คำพูด และความคิดของ \"แคร์โรไลน์\" เท่านั้น\n2. ห้ามเขียนว่าผู้เล่นทำอะไร พูดอะไร รู้สึกอย่างไร หรือคิดอะไร แม้แต่ประโยคเดียว\n   ห้ามขึ้นประโยคด้วย \"คุณ...\" หรือ \"เธอ...\" ที่หมายถึงผู้เล่น\n   ถ้าอยากรู้ว่าผู้เล่นทำอะไร ให้แคร์โรไลน์ถามหรือรอ ไม่ใช่เขียนแทน\n3. ทุกคำตอบต้องมีการกระทำที่เกิดขึ้นจริง ไม่ใช่มีแต่บทพูดลอยๆ\n4. ห้ามลงท้ายด้วยคำถามสองครั้งติดกัน ถ้าคำตอบก่อนหน้าจบด้วยคำถาม\n   คำตอบนี้ต้องจบด้วยการกระทำแทน\n5. ห้ามใช้คำลงท้ายแบบผู้ช่วย เช่น \"มีอะไรให้ช่วยไหม\" \"ยินดีให้บริการ\"\n6. ตอบยาว 2-4 ประโยค ไม่ต้องบรรยายฉากยืดยาว\n7. ตอบเป็นภาษาไทย"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "692cfe90-eb0a-4d35-87c4-0d7aa56f9d2e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "dc364791-29d1-4dac-a09d-dcbc9d484643",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wUe5QtH774Yjxup5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        208
+      ],
+      "id": "f9255ca6-d7f7-4eed-b766-cafad8ed8de0",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// Guard: ตัดส่วนที่ AI เขียนแทนผู้เล่นทิ้ง\n// ============================================\n\n// คำที่ใช้เรียกผู้เล่น\n// สำคัญ: ห้ามใส่ \"เธอ\" เพราะบทบรรยายใช้ \"เธอ\" แทนแคร์โรไลน์เอง\nconst PLAYER = '(?:คุณ|ท่าน|ผู้มาเยือน|เจ้าหนู|นักเดินทาง|ชายแปลกหน้า|หญิงแปลกหน้า)';\n\n// กริยาแสดงการกระทำ ความรู้สึก และความคิด\nconst VERB = '(?:ทำ|พูด|บอก|ตอบ|ถาม|เดิน|ก้าว|นั่ง|ลุก|ยืน|หัน|มอง|จ้อง|ยิ้ม|หัวเราะ|พยักหน้า|ส่ายหน้า|หยิบ|วาง|ยื่น|ดึง|ผลัก|เอื้อม|ก้ม|เงย|รู้สึก|คิด|ตัดสินใจ|นึก|ตกใจ|กลัว|โกรธ|ดีใจ|เสียใจ|ลังเล|สัมผัส|ได้ยิน|เห็น|จำ|รู้|เข้าใจ)';\n\nconst PLAYER_ACTION = new RegExp(PLAYER + '\\\\s*' + VERB);\n\nfunction stripPlayerNarration(text) {\n  // แยกข้อความสลับกันระหว่าง [บทบรรยาย] และ [\"บทพูด\"]\n  const parts = text.split(/([\"“][^\"”]*[\"”])/);\n  let out = '';\n  let cut = false;\n\n  for (const part of parts) {\n    const isDialogue = /^[\"“]/.test(part);\n\n    // ตรวจเฉพาะบทบรรยาย ไม่แตะบทพูดของตัวละคร\n    if (!isDialogue) {\n      const m = part.match(PLAYER_ACTION);\n      if (m) {\n        out += part.slice(0, m.index);\n        cut = true;\n        break;\n      }\n    }\n    out += part;\n  }\n\n  out = out.replace(/[\"“”\\s]+$/, '').trim();\n  return { text: out, cut };\n}\n\nreturn $input.all().map(item => {\n  const original = item.json.output ?? '';\n  const { text, cut } = stripPlayerNarration(original);\n  const emptied = cut && text.length === 0;\n\n  return {\n    json: {\n      output: emptied ? original : text,\n      guard_triggered: cut,      // ใช้นับตอนวัดผล\n      guard_emptied: emptied,    // ตัดจนไม่เหลืออะไร = ถือว่าพลาด\n      original_output: original, // เก็บของเดิมไว้เทียบ\n    },\n  };\n});"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        208
+      ],
+      "id": "a3da1cbc-f391-4b54-b2bd-eebc4302abc3",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// Guard: ตัดส่วนที่ AI เขียนแทนผู้เล่นทิ้ง\n// ============================================\n\n// คำที่ใช้เรียกผู้เล่น\n// สำคัญ: ห้ามใส่ \"เธอ\" เพราะบทบรรยายใช้ \"เธอ\" แทนแคร์โรไลน์เอง\nconst PLAYER = '(?:คุณ|ท่าน|ผู้มาเยือน|เจ้าหนู|นักเดินทาง|ชายแปลกหน้า|หญิงแปลกหน้า)';\n\n// กริยาแสดงการกระทำ ความรู้สึก และความคิด\nconst VERB = '(?:ทำ|พูด|บอก|ตอบ|ถาม|เดิน|ก้าว|นั่ง|ลุก|ยืน|หัน|มอง|จ้อง|ยิ้ม|หัวเราะ|พยักหน้า|ส่ายหน้า|หยิบ|วาง|ยื่น|ดึง|ผลัก|เอื้อม|ก้ม|เงย|รู้สึก|คิด|ตัดสินใจ|นึก|ตกใจ|กลัว|โกรธ|ดีใจ|เสียใจ|ลังเล|สัมผัส|ได้ยิน|เห็น|จำ|รู้|เข้าใจ)';\n\nconst PLAYER_ACTION = new RegExp(PLAYER + '\\\\s*' + VERB);\n\nfunction stripPlayerNarration(text) {\n  // แยกข้อความสลับกันระหว่าง [บทบรรยาย] และ [\"บทพูด\"]\n  const parts = text.split(/([\"“][^\"”]*[\"”])/);\n  let out = '';\n  let cut = false;\n\n  for (const part of parts) {\n    const isDialogue = /^[\"“]/.test(part);\n\n    // ตรวจเฉพาะบทบรรยาย ไม่แตะบทพูดของตัวละคร\n    if (!isDialogue) {\n      const m = part.match(PLAYER_ACTION);\n      if (m) {\n        out += part.slice(0, m.index);\n        cut = true;\n        break;\n      }\n    }\n    out += part;\n  }\n\n  out = out.replace(/[\"“”\\s]+$/, '').trim();\n  return { text: out, cut };\n}\n\nreturn $input.all().map(item => {\n  const original = item.json.output ?? '';\n  const { text, cut } = stripPlayerNarration(original);\n  const emptied = cut && text.length === 0;\n\n  return {\n    json: {\n      output: emptied ? original : text,\n      guard_triggered: cut,      // ใช้นับตอนวัดผล\n      guard_emptied: emptied,    // ตัดจนไม่เหลืออะไร = ถือว่าพลาด\n      original_output: original, // เก็บของเดิมไว้เทียบ\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        16
+      ],
+      "id": "873f0b55-ef58-4827-ab84-71fa59183284",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "48d6398e-78c7-449d-b7f1-357b79848a98",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b30e65da118e28b22502ecb992baffba07c6d731c135a508bcaf4168303ac55e"
+  },
+  "nodeGroups": [],
+  "id": "ICej8MlFeQzYL2KG",
+  "tags": []
+}

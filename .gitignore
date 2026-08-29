@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.env
+.env.local
+.venv/
+venv/
+.DS_Store
+
+# ไฟล์ส่วนตัว ไม่เกี่ยวกับโปรเจกต์
+resume-*.pdf
+roleplay-agent-notes.md
+
+# ไฟล์สถานะของเครื่องมือที่ใช้ทำงาน ไม่ใช่ส่วนหนึ่งของโปรเจกต์
+.claude/
+.vscode/
+.idea/
