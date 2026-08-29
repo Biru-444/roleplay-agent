@@ -254,9 +254,19 @@ def load_previous():
     if not RESULTS_PATH.exists():
         return {}
     try:
-        return json.loads(RESULTS_PATH.read_text(encoding="utf-8")).get("results", {})
+        results = json.loads(RESULTS_PATH.read_text(encoding="utf-8")).get("results", {})
     except (json.JSONDecodeError, OSError):
         return {}
+
+    # คำนวณคะแนนใหม่จากบทสนทนาดิบทุกครั้งที่โหลด ไม่ใช้ค่าที่เซฟไว้
+    #
+    # คะแนนเป็นของที่คำนวณได้จากข้อมูลดิบ ไม่ใช่ข้อมูลเอง
+    # ถ้าแก้สูตรการนับทีหลัง จะได้ไม่ต้องยิง API ใหม่ 80 ครั้งเพื่อให้ได้ตัวเลขชุดใหม่
+    # แค่รัน --resume ก็ได้ตารางที่คิดด้วยสูตรใหม่จากข้อมูลเดิม
+    for r in results.values():
+        if r.get("turns"):
+            r["score"] = score(r["turns"])
+    return results
 
 
 def save(model, results):
@@ -275,9 +285,16 @@ MIN_SANE_LENGTH = 40
 
 def score(turns):
     total = len(turns)
-    spoke_for = sum(1 for t in turns if t["guard_triggered"])
-    questions = sum(1 for t in turns if t["ends_with_question"])
-    actions = sum(1 for t in turns if t["has_action"])
+
+    # เทิร์นที่โมเดลตอบว่าง เอามาวัดไม่ได้ เพราะไม่มีข้อความให้ตรวจ
+    # ถ้านับรวมในตัวหาร มันจะกลายเป็น "ไม่ผิด" ทั้งสามคอลัมน์โดยอัตโนมัติ
+    # ซึ่งทำให้ตัวเลขดูดีขึ้นจากความล้มเหลว จึงตัดออกจากตัวหารแล้วรายงานแยก
+    usable = [t for t in turns if t.get("reply", "").strip()]
+    measurable = len(usable)
+
+    spoke_for = sum(1 for t in usable if t["guard_triggered"])
+    questions = sum(1 for t in usable if t["ends_with_question"])
+    actions = sum(1 for t in usable if t["has_action"])
 
     # ---- ตัวชี้วัดสุขภาพของข้อมูล ไม่ใช่ผลการทดลอง ----
     #
@@ -298,13 +315,15 @@ def score(turns):
     retries = sum(t.get("llm_retries", 0) for t in turns)
     avg_len = round(sum(len(t.get("reply", "")) for t in turns) / total) if total else 0
 
+    denom = measurable or 1
     return {
         "total": total,
+        "measurable": measurable,
         "spoke_for_player": spoke_for,
         "ends_with_question": questions,
-        "ends_with_question_pct": round(questions / total * 100),
+        "ends_with_question_pct": round(questions / denom * 100),
         "has_action": actions,
-        "has_action_pct": round(actions / total * 100),
+        "has_action_pct": round(actions / denom * 100),
         "truncated": truncated,
         "empty": empty,
         "too_short": too_short,
@@ -313,26 +332,53 @@ def score(turns):
     }
 
 
+# สัดส่วนคำตอบว่างที่ยอมรับได้ก่อนถือว่าข้อมูลทั้งชุดใช้ไม่ได้
+#
+# ตอนแรกตั้งไว้ว่าห้ามมีเลยแม้แต่อันเดียว ซึ่งเข้มเกินไป
+# โมเดลรุ่นเล็กตอบว่างเป็นครั้งคราวโดยธรรมชาติ ยิงซ้ำแล้วส่วนใหญ่หาย
+# แต่บางเทิร์นยิงครบ 3 ครั้งก็ยังว่าง — นั่นคืออัตราพลาดจริงที่ควรรายงาน
+# ไม่ใช่เหตุผลที่จะทิ้งข้อมูลอีก 79 เทิร์นที่ใช้ได้
+#
+# ถ้าเกิน 10% ค่อยถือว่าผิดปกติเชิงระบบ ต้องหยุดหาสาเหตุก่อน
+EMPTY_TOLERANCE = 0.10
+
+
 def data_is_healthy(results) -> bool:
-    """บล็อกเฉพาะกรณีที่ไม่มีข้อความให้วัดจริงๆ — คำตอบสั้นไม่ถือว่าเสียหาย"""
-    return all(
-        r["score"]["truncated"] == 0 and r["score"]["empty"] == 0
-        for r in results.values()
-    )
+    """บล็อกเมื่อข้อมูลเสียหายเชิงระบบเท่านั้น ไม่ใช่เมื่อมีจุดพลาดประปราย"""
+    for r in results.values():
+        s = r["score"]
+        if s["truncated"] > 0:
+            return False
+        if s["total"] and s["empty"] / s["total"] > EMPTY_TOLERANCE:
+            return False
+        if s["measurable"] == 0:
+            return False
+    return True
 
 
 def markdown_table(results):
     lines = [
-        "| วิธี | คิดแทนผู้เล่น | ลงท้ายด้วยคำถาม | คำตอบที่มีการกระทำ |",
+        "| วิธี | คิดแทนลูกค้า | ลงท้ายด้วยคำถาม | คำตอบที่มีการกระทำ |",
         "|---|---|---|---|",
     ]
     for cond in CONDITIONS:
         s = results[cond["key"]]["score"]
+        m = s["measurable"]
         lines.append(
             f"| {cond['label']} "
-            f"| {s['spoke_for_player']}/{s['total']} "
-            f"| {s['ends_with_question']}/{s['total']} ({s['ends_with_question_pct']}%) "
-            f"| {s['has_action']}/{s['total']} ({s['has_action_pct']}%) |"
+            f"| {s['spoke_for_player']}/{m} "
+            f"| {s['ends_with_question']}/{m} ({s['ends_with_question_pct']}%) "
+            f"| {s['has_action']}/{m} ({s['has_action_pct']}%) |"
+        )
+
+    dropped = sum(r["score"]["empty"] for r in results.values())
+    if dropped:
+        total_turns = sum(r["score"]["total"] for r in results.values())
+        lines.append("")
+        lines.append(
+            f"> ตัวหารบางแถวไม่ใช่ 20 เพราะตัดเทิร์นที่โมเดลตอบว่างออก "
+            f"({dropped} จาก {total_turns} เทิร์น) — ยิงซ้ำอัตโนมัติแล้วแต่ยังว่าง "
+            f"เอามาวัดไม่ได้เพราะไม่มีข้อความให้ตรวจ"
         )
     return "\n".join(lines)
 
