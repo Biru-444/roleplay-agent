@@ -156,7 +156,20 @@ def generate_response(
     temperature: float = 0.9,
     max_output_tokens: Optional[int] = None,
     model: Optional[str] = None,
+    response_mime_type: Optional[str] = None,
+    response_schema: Optional[object] = None,
 ) -> LLMResult:
+    """
+    response_mime_type / response_schema (เฟส 6): ให้ Gemini บังคับรูปแบบผลลัพธ์เป็น JSON
+    ตาม schema ที่ให้ (เช่น pydantic model) — ใช้เวลาต้องการคำตอบที่ parse ได้แน่นอน
+    เช่น divergence.py ที่ต้องแยก "เปลี่ยนไหม" ออกจาก "เปลี่ยนว่าอะไร" อย่างชัดเจน
+
+    ทำไมต้องมี: ตอนแรก divergence.py สั่งด้วยข้อความล้วนๆ ว่า "ตอบคำเดียว" แต่โมเดลรุ่น lite
+    ชอบเขียนคำอธิบายนำหน้าคำตอบแม้สั่งห้ามแล้ว (พบจริงตอนทดสอบ 31 ส.ค. 2569 — ตอบว่า
+    "...เนื้อเรื่องจึงยังดำเนินตามต้นฉบับ\\n\\nไม่เปลี่ยน" ทำให้โค้ดที่เช็คแค่ขึ้นต้นด้วยคำว่า
+    "ไม่เปลี่ยน" อ่านผิดว่ามีการเปลี่ยนแปลง) response_schema บังคับที่ระดับ API ไม่ใช่แค่ขอในข้อความ
+    เลยไม่มีทางมีคำอธิบายปนมาได้อีก
+    """
     client = get_client()
 
     config_kwargs = {
@@ -167,6 +180,10 @@ def generate_response(
     # ชั้นที่ 1 ของการกันคิดแทนผู้เล่น — ส่งไปกับ request ตรงๆ
     if stop_sequences:
         config_kwargs["stop_sequences"] = list(stop_sequences)
+    if response_mime_type:
+        config_kwargs["response_mime_type"] = response_mime_type
+    if response_schema is not None:
+        config_kwargs["response_schema"] = response_schema
 
     model_name = model or get_model_name()
     contents = build_contents(history, user_message)

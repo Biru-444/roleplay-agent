@@ -1,0 +1,99 @@
+{
+  "steps": [
+    {
+      "step": "health",
+      "status_code": 200,
+      "body": {
+        "status": "ok",
+        "model": "gemini-3.5-flash-lite",
+        "storage": "memory",
+        "characters": [
+          "caroline",
+          "lorekeeper",
+          "narrator_lotm",
+          "salesman",
+          "tutor"
+        ],
+        "rag": {
+          "ready": true,
+          "index_dir": "D:\\project Resume\\noveldata\\phase3_scripts",
+          "chunks": 24750,
+          "load_seconds": 30.0,
+          "error": ""
+        }
+      }
+    },
+    {
+      "step": "list_models",
+      "status_code": 200,
+      "body": {
+        "object": "list",
+        "data": [
+          {
+            "id": "roleplay-agent",
+            "object": "model",
+            "created": 0,
+            "owned_by": "roleplay-agent"
+          }
+        ]
+      }
+    },
+    {
+      "step": "stream_should_fail_gracefully",
+      "status_code": 400,
+      "body": {
+        "detail": "ยังไม่รองรับ streaming ในเวอร์ชันนี้ — ไปที่หน้าตั้งค่า API ของ SillyTavern แล้วปิดตัวเลือก 'Streaming' ก่อน (ดูวิธีตั้งค่าในเอกสารโปรเจกต์ เฟส 7)"
+      }
+    },
+    {
+      "step": "chat_completions_turn_1",
+      "status_code": 200,
+      "body": {
+        "id": "chatcmpl-485e9437fc2243bf8f7e0423",
+        "object": "chat.completion",
+        "created": 1788194937,
+        "model": "gpt-3.5-turbo",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "แสงสีแดงเจือจางสาดส่องผ่านกระจกหน้าต่างห้องพักในเมืองทิงเก้น บรรยากาศยามเช้าอันเงียบสงบอบอวลไปด้วยกลิ่นอายยุคอุตสาหกรรม ไคลน์ โมเรตติ หรือในยามนี้คือโจวหมิงรุ่ย กำลังนั่งกุมขมับด้วยความเจ็บปวดจากการตื่นขึ้นมาพร้อมความทรงจำแปลกปลอม บนโต๊ะไม้เบื้องหน้ามีสมุดบันทึกที่เปิดค้างไว้พร้อมตัวอักษรภาษาเฮอร์มิสที่เพิ่งแปลออก เสียงถอนหายใจเบาๆ จากความเหนื่อยล้าดังขึ้นท่ามกลางความเงียบของห้องเช่าคับแคบขนาดสองห้องนอน ขณะที่ภายนอกแสงสีแดงฉานยังคงปกคลุมท้องฟ้าอย่างผิดธรรมชาติ"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "total_tokens": 0
+        }
+      }
+    },
+    {
+      "step": "chat_completions_turn_2_recall_check",
+      "status_code": 200,
+      "body": {
+        "id": "chatcmpl-e57227c8cfc345f1a7a2250a",
+        "object": "chat.completion",
+        "created": 1788194945,
+        "model": "gpt-3.5-turbo",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "ภายในห้องพักที่อบอวลไปด้วยกลิ่นอายความอับชื้นและหมึกพิมพ์ ไคลน์ที่เพิ่งดึงสติกลับมาจากความทรงจำอันสับสนชำเลืองสายตาไปยังร่างของสหายที่นั่งอยู่ไม่ไกล ริมฝีปากของบัณฑิตหนุ่มขยับเอ่ยขึ้นด้วยน้ำเสียงแหบพร่าเพื่อทำลายความเงียบ \"เอ็ดริค... นายยังนั่งเงียบอยู่ตรงนั้นอีกหรือ บรรยากาศสีแดงข้างนอกนี่มันชวนให้ประสาทเสียชะมัด\" แสงสีชาดภายนอกยังคงสาดส่องเข้ามาผ่านกระจกหน้าต่างเก่าๆ ทอดเงายาวเยือกเย็นไปทั่วห้องเช่าขนาดเล็ก"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "total_tokens": 0
+        }
+      }
+    }
+  ]
+}

@@ -14,3 +14,8 @@ roleplay-agent-notes.md
 .claude/
 .vscode/
 .idea/
+
+# ข้อมูลนิยาย (ไฟล์ PDF ลิขสิทธิ์ + index/cache ที่ derive มาจากมัน — รวมกันเกิน 1GB)
+# กับเซฟบทสนทนาที่เล่นจริง (runtime state เฉพาะเครื่อง ไม่ใช่ source code)
+noveldata/
+story_saves/
